@@ -11,10 +11,52 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const logo = require("../../assets/images/dinetimelogo.png");
 import { Formik } from "formik";
 import validationSchema from "../../utils/authSchema";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { doc, getFirestore, getDoc } from "firebase/firestore";
+import {getAuth} from "firebase/auth";
+import { Alert } from "react-native";
+
 
 const Signup = () => {
   const router = useRouter();
-  const handleSignin = () => {};
+  const auth = getAuth();
+    const db = getFirestore();
+  const handleSignin = async(values) => {
+    try {
+     const userCredentials = await signInWithEmailAndPassword(
+       auth,values.email,values.password
+     );
+ 
+ 
+     const user = userCredentials.user;
+     const userDoc = await getDoc(doc(db,"users",user.uid));
+     if(userDoc.exists()){
+      console.log("User data",userDoc.data());
+      await AsyncStorage.setItem("userEmail",values.email);
+      router.push("/home");
+     }
+    else{
+      console.log("No such Document")
+    }
+     
+ 
+    }  catch (error) {
+     if (error.code === "auth/wrong password") {
+       Alert.alert(
+         "Signin Failed!",
+         "Incorrect password. Please try again",
+         [{ text: "OK" }]
+       );
+     } else {
+       Alert.alert(
+         "Signin Error",
+         "An unexpected error occurred. Please try again later.",
+         [{ text: "OK" }]
+       );
+     }
+   }
+   };
 
   return (
     <SafeAreaView className={`bg-[#2b2b2b]`}>

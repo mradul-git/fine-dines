@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -12,17 +12,34 @@ import {
   
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import restaurants from "../../store/restaurant";
+import {restaurants} from "../../store/restaurant";
 import { BlurView } from "expo-blur";
 
+import { useRouter } from "expo-router";
 
 // Replace with a valid internet image URL for testing
 //const banner = { uri: "https://picsum.photos/600/300" };
 import banner from "../../assets/images/homeBanner.png";
+//import UploadData from "../../config/bulkupload";
+import { getDocs, query,collection } from "firebase/firestore";
+import { db } from "../../config/firebaseConfig"; // adjust path based on your folder structure
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const logo = require("../../assets/images/dinetimelogo.png");
 
 const Home = () => {
+   
+  //useEffect(()=>{
+  //UploadData();
+  //},[]);
+  //UploadData()
+
+   const [restaurants,setRestaurants] = useState([]);
+   const router = useRouter();
+   const temp  = async () =>{
+    return await AsyncStorage.getItem("userEmail");
+   };
+   console.log(temp());
   const renderItem = ({ item }) => (
     <TouchableOpacity
       onPress={() => router.push(`/restaurant/${item.name}`)}
@@ -43,9 +60,21 @@ const Home = () => {
 
   console.log("RESTAURANTS",restaurants);
    
-  useEffect(() => {
-    
-  }, []);
+  
+
+  const getRestaurants = async()=>{
+
+    const q = query(collection(db,"restaurants"));
+    const res = await getDocs(q);
+
+    res.forEach((item)=>{
+      setRestaurants((prev)=>[...prev,item.data()]);
+    });
+  };
+
+  useEffect(() =>{
+   getRestaurants();
+  },[]);
 
 
   return (
@@ -121,6 +150,7 @@ const Home = () => {
       ) : (
         <ActivityIndicator animating color={"#fb9b33"} />
       )}
+
 
       
     </ScrollView>

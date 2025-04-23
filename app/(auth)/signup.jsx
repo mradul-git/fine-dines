@@ -11,10 +11,47 @@ import { SafeAreaView } from "react-native-safe-area-context";
 const logo = require("../../assets/images/dinetimelogo.png");
 import { Formik } from "formik";
 import validationSchema from "../../utils/authSchema";
-
+import {createUserWithEmailAndPassword,getAuth} from "firebase/auth";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { doc, getFirestore, setDoc } from "firebase/firestore";
 const Signup = () => {
-    const router = useRouter();
-  const handleSignup = () => {};
+    const router = useRouter()  ;
+
+
+  const auth = getAuth();
+  const db = getFirestore();
+  const handleSignup = async(values) => {
+   try {
+    const userCredentials = await createUserWithEmailAndPassword(
+      auth,values.email,values.password
+    );
+
+
+    const user = userCredentials.user;
+    await setDoc(doc(db,"users",user.uid),{
+    email:values.email,
+    createdAt:new Date(),
+
+   });
+   await AsyncStorage.setItem("userEmail",values.email);
+    router.push("/home");
+
+   }  catch (error) {
+    if (error.code === "auth/email-already-in-use") {
+      Alert.alert(
+        "Signup Failed!",
+        "This email address is already in use. Please use a different email.",
+        [{ text: "OK" }]
+      );
+    } else {
+      Alert.alert(
+        "Signup Error",
+        "An unexpected error occurred. Please try again later.",
+        [{ text: "OK" }]
+      );
+    }
+  }
+  };
 
   return (
     <SafeAreaView className={`bg-[#2b2b2b]`}>
