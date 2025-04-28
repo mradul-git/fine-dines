@@ -1,10 +1,16 @@
 import { Image, Text, View, TouchableOpacity, ScrollView } from "react-native";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const logo = require("../assets/images/dinetimelogo.png");
 
 export default function Index() {
   const router = useRouter();
+  const handleGuest = async ()=>{
+    await AsyncStorage.setItem("isGuest",true);
+    router.push("/home");
+  }
+
   return (
     <SafeAreaView className={`bg-[#2b2b2b]`}>
       <ScrollView contentContainerStyle={{ flexGrow:1 }}>
@@ -19,7 +25,7 @@ export default function Index() {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => router.push("/(tabs)/home")}
+            onPress={handleGuest}
             className="p-2 my-2 bg-[#2b2b2b] border border-[#f49b33] rounded-lg max-w-fit "
           >
             <Text className="text-lg font-semibold text-[#f49b33] text-center">

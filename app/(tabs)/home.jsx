@@ -37,7 +37,7 @@ const Home = () => {
    const [restaurants,setRestaurants] = useState([]);
    const router = useRouter();
    const temp  = async () =>{
-    return await AsyncStorage.getItem("userEmail");
+    const value =  await AsyncStorage.getItem("userEmail");
    };
    console.log(temp());
   const renderItem = ({ item }) => (
@@ -74,6 +74,7 @@ const Home = () => {
 
   useEffect(() =>{
    getRestaurants();
+   temp();
   },[]);
 
 

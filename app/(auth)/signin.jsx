@@ -42,7 +42,7 @@ const Signup = () => {
      
  
     }  catch (error) {
-     if (error.code === "auth/wrong password") {
+     if (error.code === "auth/invalid-credential") {
        Alert.alert(
          "Signin Failed!",
          "Incorrect password. Please try again",

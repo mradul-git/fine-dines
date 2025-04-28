@@ -20,6 +20,13 @@ const Signup = () => {
 
   const auth = getAuth();
   const db = getFirestore();
+   
+   const handleGuest = async ()=>{
+      await AsyncStorage.setItem("isGuest",true);
+      router.push("/home");
+    }
+  
+
   const handleSignup = async(values) => {
    try {
     const userCredentials = await createUserWithEmailAndPassword(
